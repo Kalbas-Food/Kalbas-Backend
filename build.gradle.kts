@@ -22,8 +22,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.hibernate.orm:hibernate-envers:6.2.6.Final") // Add Hibernate Envers
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0") // Add Jakarta Persistence API
+    implementation("org.hibernate.orm:hibernate-core:6.6.11.Final")
+    implementation("org.hibernate.orm:hibernate-envers:6.6.11.Final")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
