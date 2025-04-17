@@ -2,9 +2,9 @@ spring:
   application:
     name: kalbas_backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/kalbas
-    username: user
-    password: password
+    url: jdbc:postgresql://localhost:5432/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

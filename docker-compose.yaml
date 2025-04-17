@@ -2,10 +2,10 @@ services:
   database:
     image: postgres:latest
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: kalbas
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
-      - "5432:5432"
+        - ${DATABASE_PORT}:5432
     volumes:
       - ./data/db:/var/lib/postgresql/data
