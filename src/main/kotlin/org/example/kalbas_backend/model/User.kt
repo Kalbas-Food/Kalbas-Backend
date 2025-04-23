@@ -3,7 +3,6 @@ package org.example.kalbas_backend.model
 import jakarta.persistence.* // Correct import for JPA annotations
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.data.annotation.Version
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 import org.example.kalbas_backend.config.Constants
@@ -42,11 +41,8 @@ class User() {
     @Column(name = "updated_at")
     var updatedAt: Instant? = null
 
-    @Version
-    var version: Long? = null
-
     override fun toString(): String {
-        return "User(id=$id, username=$username, firstName='$firstName', lastName=$lastName, email=$email, createdAt=$createdAt, updatedAt=$updatedAt, version=$version)"
+        return "User(id=$id, username=$username, firstName='$firstName', lastName=$lastName, email=$email, createdAt=$createdAt, updatedAt=$updatedAt)"
     }
 }
 
