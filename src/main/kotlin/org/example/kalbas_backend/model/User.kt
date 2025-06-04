@@ -1,48 +1,61 @@
 package org.example.kalbas_backend.model
 
-import jakarta.persistence.* // Correct import for JPA annotations
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.Instant
-import org.example.kalbas_backend.config.Constants
+import jakarta.persistence.*
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
-@EntityListeners(AuditingEntityListener::class)
-@Table(
-    name = "users", schema = "public", uniqueConstraints = [
-        UniqueConstraint(name = "uc_user_username", columnNames = ["username"])
-    ]
-)
-class User() {
-
+@Table(name = "users")
+class User(
     @Id
-    @GeneratedValue
-    @Column(name = "id")
-    var id: Long = 0
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+    
+    @Column(nullable = false, unique = true)
+    private val username: String,
+    
+    @Column(nullable = false)
+    private var password: String,
+    
+    @Column(nullable = false, unique = true)
+    val email: String,
+    
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    val role: Role = Role.ROLE_USER,
+    
+    @Column(nullable = false)
+    private val isAccountNonExpired: Boolean = true,
+    
+    @Column(nullable = false)
+    private val isAccountNonLocked: Boolean = true,
+    
+    @Column(nullable = false)
+    private val isCredentialsNonExpired: Boolean = true,
+    
+    @Column(nullable = false)
+    private val isEnabled: Boolean = true
+) : UserDetails {
 
-    @Column(name = "username", length = Constants.MAX_USERNAME_LENGTH)
-    var username: String? = null
-
-    @Column(name = "first_name", length = Constants.MAX_NAME_AND_LAST_NAME_LENGTH)
-    lateinit var firstName: String
-
-    @Column(name = "last_name", length = Constants.MAX_NAME_AND_LAST_NAME_LENGTH)
-    var lastName: String? = null
-
-    @Column(name = "email", length = Constants.MAX_EMAIL_LENGTH)
-    var email: String? = null
-
-    @CreatedDate
-    @Column(name = "created_at")
-    var createdAt: Instant = Instant.now()
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    var updatedAt: Instant? = null
-
-    override fun toString(): String {
-        return "User(id=$id, username=$username, firstName='$firstName', lastName=$lastName, email=$email, createdAt=$createdAt, updatedAt=$updatedAt)"
+    override fun getAuthorities(): Collection<GrantedAuthority> {
+        return listOf(SimpleGrantedAuthority(role.name))
     }
+
+    override fun getPassword(): String = password
+
+    fun setPassword(password: String) {
+        this.password = password
+    }
+
+    override fun getUsername(): String = username
+
+    override fun isAccountNonExpired(): Boolean = isAccountNonExpired
+
+    override fun isAccountNonLocked(): Boolean = isAccountNonLocked
+
+    override fun isCredentialsNonExpired(): Boolean = isCredentialsNonExpired
+
+    override fun isEnabled(): Boolean = isEnabled
 }
 
