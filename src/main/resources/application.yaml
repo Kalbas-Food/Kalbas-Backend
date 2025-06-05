@@ -1,21 +1,22 @@
+# Database Configuration
 spring:
-  application:
-    name: kalbas_backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/${DATABASE_NAME}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:kalbas}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  security:
-    user:
-      name: mahdi
-      password: mahdi
 
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:kalbas-jwt-secret-key-for-authentication-and-authorization}
+  expiration: ${JWT_EXPIRATION:86400000}
+  refreshExpiration: ${JWT_REFRESH_EXPIRATION:604800000}
 
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080} 
