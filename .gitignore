@@ -280,3 +280,4 @@ gradle-app.setting
 
 data/*
 .env
+metabase_data/*
