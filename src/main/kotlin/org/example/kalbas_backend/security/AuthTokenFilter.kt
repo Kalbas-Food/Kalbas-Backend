@@ -19,6 +19,15 @@ class AuthTokenFilter(
 
     private val logger = LoggerFactory.getLogger(AuthTokenFilter::class.java)
 
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
+        val path = request.servletPath
+        return path.startsWith("/api/auth/") || 
+               path.startsWith("/auth/") || 
+               path.startsWith("/api/test/") || 
+               path.startsWith("/api/public/") ||
+               path == "/error"
+    }
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,

@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @Configuration
 @EnableWebSecurity
@@ -52,13 +53,19 @@ class WebSecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/api/test/all").permitAll()
-                    .requestMatchers("/api/public/**").permitAll()
+                    .requestMatchers(
+                        "/api/auth/**",
+                        "/auth/**",
+                        "/api/test/all",
+                        "/api/public/**",
+                        "/error"
+                    ).permitAll()
                     .anyRequest().authenticated()
             }
 
         http.authenticationProvider(authenticationProvider())
+        
+        // Add JWT filter only for authenticated requests
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
         
         return http.build()
