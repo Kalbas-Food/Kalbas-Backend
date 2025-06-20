@@ -12,11 +12,19 @@ class RefreshToken(
     
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    val user: User,
+    val user: User? = null,
     
     @Column(nullable = false, unique = true)
-    var token: String,
+    var token: String = "",
     
     @Column(nullable = false)
-    var expiryDate: Instant
-) 
+    var expiryDate: Instant = Instant.now()
+) {
+    // No-argument constructor required by JPA
+    constructor() : this(
+        id = null,
+        user = null,
+        token = "",
+        expiryDate = Instant.now()
+    )
+} 

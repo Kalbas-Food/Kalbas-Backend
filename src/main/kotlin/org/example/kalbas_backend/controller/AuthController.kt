@@ -97,7 +97,7 @@ class AuthController(
         return refreshTokenService.findByToken(requestRefreshToken)
             .map { refreshTokenService.verifyExpiration(it) }
             .map { refreshToken ->
-                val user = refreshToken.user
+                val user = refreshToken.user ?: throw TokenRefreshException(requestRefreshToken, "User not found for refresh token!")
                 val token = jwtUtils.generateTokenFromUsername(user.username)
                 ResponseEntity.ok(TokenRefreshResponseDto(token, requestRefreshToken))
             }
