@@ -7,8 +7,8 @@ import org.example.kalbas_backend.dto.request.TokenRefreshRequest
 import org.example.kalbas_backend.dto.response.JwtResponse
 import org.example.kalbas_backend.dto.response.MessageResponse
 import org.example.kalbas_backend.dto.response.TokenRefreshResponse
+import org.example.kalbas_backend.enums.UserRoleEnum
 import org.example.kalbas_backend.exception.TokenRefreshException
-import org.example.kalbas_backend.model.Role
 import org.example.kalbas_backend.model.User
 import org.example.kalbas_backend.repository.UserRepository
 import org.example.kalbas_backend.security.JwtUtils
@@ -71,12 +71,18 @@ class AuthController(
                 .body(MessageResponse("Error: Email is already in use!"))
         }
 
-        // Create new user's account
+        if (signupRequest.password != signupRequest.confirmPassword) {
+            return ResponseEntity
+                .badRequest()
+                .body(MessageResponse("Error: Passwords do not match!"))
+        }
+
+        // Create a new user's account
         val user = User(
             username = signupRequest.username,
             email = signupRequest.email,
             password = passwordEncoder.encode(signupRequest.password),
-            role = Role.ROLE_USER
+            role = UserRoleEnum.ROLE_USER
         )
 
         userRepository.save(user)
