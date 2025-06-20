@@ -1,6 +1,6 @@
 package org.example.kalbas_backend.dto.response
 
-data class JwtResponse(
+data class LoginResponseDto(
     val token: String,
     val refreshToken: String,
     val id: Long,
@@ -9,12 +9,12 @@ data class JwtResponse(
     val roles: List<String>
 )
 
-data class TokenRefreshResponse(
+data class TokenRefreshResponseDto(
     val accessToken: String,
     val refreshToken: String,
     val tokenType: String = "Bearer"
 )
 
-data class MessageResponse(
+data class MessageResponseDto(
     val message: String
-) 
+)

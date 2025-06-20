@@ -3,15 +3,17 @@ package org.example.kalbas_backend.dto.request
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-data class LoginRequest(
+data class LoginRequestDto(
     @field:NotBlank
-    val username: String,
+    @field:Size(min = 3, max = 50)
+    val identifier: String,
 
     @field:NotBlank
+    @field:Size(min = 3, max = 40)
     val password: String
 )
 
-data class SignupRequest(
+data class SignupRequestDto(
     @field:NotBlank
     @field:Size(min = 3, max = 20)
     val username: String,
@@ -29,7 +31,7 @@ data class SignupRequest(
     val confirmPassword: String
 )
 
-data class TokenRefreshRequest(
+data class TokenRefreshRequestDto(
     @field:NotBlank
     val refreshToken: String
 ) 

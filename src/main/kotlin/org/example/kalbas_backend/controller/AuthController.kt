@@ -1,12 +1,12 @@
 package org.example.kalbas_backend.controller
 
 import jakarta.validation.Valid
-import org.example.kalbas_backend.dto.request.LoginRequest
-import org.example.kalbas_backend.dto.request.SignupRequest
-import org.example.kalbas_backend.dto.request.TokenRefreshRequest
-import org.example.kalbas_backend.dto.response.JwtResponse
-import org.example.kalbas_backend.dto.response.MessageResponse
-import org.example.kalbas_backend.dto.response.TokenRefreshResponse
+import org.example.kalbas_backend.dto.request.LoginRequestDto
+import org.example.kalbas_backend.dto.request.SignupRequestDto
+import org.example.kalbas_backend.dto.request.TokenRefreshRequestDto
+import org.example.kalbas_backend.dto.response.LoginResponseDto
+import org.example.kalbas_backend.dto.response.MessageResponseDto
+import org.example.kalbas_backend.dto.response.TokenRefreshResponseDto
 import org.example.kalbas_backend.enums.UserRoleEnum
 import org.example.kalbas_backend.exception.TokenRefreshException
 import org.example.kalbas_backend.model.User
@@ -31,22 +31,22 @@ class AuthController(
     private val refreshTokenService: RefreshTokenService
 ) {
 
-    @PostMapping("/signin")
-    fun authenticateUser(@Valid @RequestBody loginRequest: LoginRequest): ResponseEntity<JwtResponse> {
+    @PostMapping("/login")
+    fun authenticateUser(@Valid @RequestBody loginRequest: LoginRequestDto): ResponseEntity<LoginResponseDto> {
         val authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password)
+            UsernamePasswordAuthenticationToken(loginRequest.identifier, loginRequest.password)
         )
 
         SecurityContextHolder.getContext().authentication = authentication
         val jwt = jwtUtils.generateJwtToken(authentication)
-        
+
         val userDetails = authentication.principal as User
         val roles = userDetails.authorities.map { it.authority }
-        
+
         val refreshToken = refreshTokenService.createRefreshToken(userDetails.id!!)
 
         return ResponseEntity.ok(
-            JwtResponse(
+            LoginResponseDto(
                 token = jwt,
                 refreshToken = refreshToken.token,
                 id = userDetails.id,
@@ -58,23 +58,23 @@ class AuthController(
     }
 
     @PostMapping("/signup")
-    fun registerUser(@Valid @RequestBody signupRequest: SignupRequest): ResponseEntity<MessageResponse> {
+    fun registerUser(@Valid @RequestBody signupRequest: SignupRequestDto): ResponseEntity<MessageResponseDto> {
         if (userRepository.existsByUsername(signupRequest.username)) {
             return ResponseEntity
                 .badRequest()
-                .body(MessageResponse("Error: Username is already taken!"))
+                .body(MessageResponseDto("Error: Username is already taken!"))
         }
 
         if (userRepository.existsByEmail(signupRequest.email)) {
             return ResponseEntity
                 .badRequest()
-                .body(MessageResponse("Error: Email is already in use!"))
+                .body(MessageResponseDto("Error: Email is already in use!"))
         }
 
         if (signupRequest.password != signupRequest.confirmPassword) {
             return ResponseEntity
                 .badRequest()
-                .body(MessageResponse("Error: Passwords do not match!"))
+                .body(MessageResponseDto("Error: Passwords do not match!"))
         }
 
         // Create a new user's account
@@ -87,11 +87,11 @@ class AuthController(
 
         userRepository.save(user)
 
-        return ResponseEntity.ok(MessageResponse("User registered successfully!"))
+        return ResponseEntity.ok(MessageResponseDto("User registered successfully!"))
     }
 
     @PostMapping("/refreshtoken")
-    fun refreshToken(@Valid @RequestBody request: TokenRefreshRequest): ResponseEntity<TokenRefreshResponse> {
+    fun refreshToken(@Valid @RequestBody request: TokenRefreshRequestDto): ResponseEntity<TokenRefreshResponseDto> {
         val requestRefreshToken = request.refreshToken
 
         return refreshTokenService.findByToken(requestRefreshToken)
@@ -99,17 +99,17 @@ class AuthController(
             .map { refreshToken ->
                 val user = refreshToken.user
                 val token = jwtUtils.generateTokenFromUsername(user.username)
-                ResponseEntity.ok(TokenRefreshResponse(token, requestRefreshToken))
+                ResponseEntity.ok(TokenRefreshResponseDto(token, requestRefreshToken))
             }
             .orElseThrow { TokenRefreshException(requestRefreshToken, "Refresh token is not in database!") }
     }
 
     @PostMapping("/signout")
-    fun logoutUser(): ResponseEntity<MessageResponse> {
+    fun logoutUser(): ResponseEntity<MessageResponseDto> {
         val principal = SecurityContextHolder.getContext().authentication.principal
         if (principal is User) {
             refreshTokenService.deleteByUserId(principal.id!!)
         }
-        return ResponseEntity.ok(MessageResponse("Log out successful!"))
+        return ResponseEntity.ok(MessageResponseDto("Log out successful!"))
     }
 } 

@@ -14,13 +14,13 @@ class User(
     val id: Long? = null,
 
     @Column(nullable = false, unique = true)
-    private val username: String,
+    private val username: String = "",
 
     @Column(nullable = false, unique = true)
-    val email: String,
+    val email: String = "",
 
     @Column(nullable = false)
-    private var password: String,
+    private var password: String = "",
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -38,6 +38,19 @@ class User(
     @Column(nullable = false)
     private val isEnabled: Boolean = true
 ) : UserDetails {
+
+    // No-argument constructor required by JPA
+    constructor() : this(
+        id = null,
+        username = "",
+        email = "",
+        password = "",
+        role = UserRoleEnum.ROLE_USER,
+        isAccountNonExpired = true,
+        isAccountNonLocked = true,
+        isCredentialsNonExpired = true,
+        isEnabled = true
+    )
 
     override fun getAuthorities(): Collection<GrantedAuthority> {
         return listOf(SimpleGrantedAuthority(role.name))
