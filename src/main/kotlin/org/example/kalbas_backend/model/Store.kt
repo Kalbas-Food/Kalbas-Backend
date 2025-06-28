@@ -1,9 +1,19 @@
+package org.example.kalbas_backend.model
+
+import jakarta.persistence.*
+import jakarta.validation.constraints.*
+import org.example.kalbas_backend.model.User
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
+import java.time.LocalDateTime
+import java.time.LocalTime
+
 @Entity
 @Table(name = "stores")
 class Store(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
+    val id: Long? = null,
 
     // Replaced ownerId with a proper @ManyToOne relationship
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -52,16 +62,13 @@ class Store(
 
     @Column(name = "cover_image_url", length = 2083)
     @field:Size(max = 2083, message = "Cover image URL must not exceed 2083 characters")
-    var coverImageUrl: String? = null
+    var coverImageUrl: String? = null,
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    var createdAt: LocalDateTime? = null,
+
+    @UpdateTimestamp
+    var updatedAt: LocalDateTime? = null
 ) {
-    // JPA requires a no-arg constructor. Kotlin data classes can get this automatically
-    // or you can define it. If this is not a data class, this constructor is needed.
-    // However, with default values in the primary constructor, this might not be strictly necessary
-    // depending on the JPA provider plugin, but it's safe to have.
-    constructor() : this(
-        id = null,
-        owner = User(), // Note: This might need careful handling
-        name = "",
-        address = ""
-    )
 }
