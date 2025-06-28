@@ -20,4 +20,4 @@ data class ItemResponseDto(
     val isActive: Boolean,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?
-) 
+)

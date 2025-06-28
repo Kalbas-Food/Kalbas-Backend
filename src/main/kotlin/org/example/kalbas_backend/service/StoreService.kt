@@ -3,6 +3,7 @@ package org.example.kalbas_backend.service
 import org.example.kalbas_backend.dto.request.StoreCreateRequestDto
 import org.example.kalbas_backend.dto.request.StoreUpdateRequestDto
 import org.example.kalbas_backend.dto.response.StoreResponseDto
+import org.example.kalbas_backend.dto.response.StoreOwnerDto
 import org.example.kalbas_backend.model.Store
 import org.example.kalbas_backend.model.User
 import org.example.kalbas_backend.repository.StoreRepository
@@ -83,7 +84,7 @@ class StoreServiceImpl(
 
     private fun Store.toDto(): StoreResponseDto = StoreResponseDto(
         id = this.id,
-        owner = StoreResponseDto.StoreOwnerDto(
+        owner = StoreOwnerDto(
             id = this.owner.id,
             username = this.owner.username,
             email = this.owner.email

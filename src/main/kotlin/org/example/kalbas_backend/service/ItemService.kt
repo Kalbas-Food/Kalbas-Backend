@@ -3,6 +3,7 @@ package org.example.kalbas_backend.service
 import org.example.kalbas_backend.dto.request.ItemCreateRequestDto
 import org.example.kalbas_backend.dto.request.ItemUpdateRequestDto
 import org.example.kalbas_backend.dto.response.ItemResponseDto
+import org.example.kalbas_backend.dto.response.ItemStoreDto
 import org.example.kalbas_backend.model.Item
 import org.example.kalbas_backend.model.Store
 import org.example.kalbas_backend.repository.ItemRepository
@@ -79,7 +80,7 @@ class ItemServiceImpl(
 
     private fun Item.toDto(): ItemResponseDto = ItemResponseDto(
         id = this.id,
-        store = ItemResponseDto.ItemStoreDto(
+        store = ItemStoreDto(
             id = this.store.id,
             name = this.store.name
         ),
@@ -91,4 +92,4 @@ class ItemServiceImpl(
         createdAt = this.createdAt,
         updatedAt = this.updatedAt
     )
-} 
+}

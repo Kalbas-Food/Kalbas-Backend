@@ -7,4 +7,4 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ItemRepository : JpaRepository<Item, Long> {
     fun findByStoreId(storeId: Long): List<Item>
-} 
+}
