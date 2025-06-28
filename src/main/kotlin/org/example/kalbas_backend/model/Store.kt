@@ -12,6 +12,10 @@ class Store(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
+    @field:NotNull(message = "Owner ID cannot be null")
+    @Column(name = "owner_id", nullable = false)
+    var ownerId: Long = 0L
+
     @field:NotBlank(message = "Name cannot be blank")
     @field:Size(max = 255, message = "Name must not exceed 255 characters")
     var name: String = "",
@@ -46,6 +50,7 @@ class Store(
 ) {
     constructor() : this(
         id = null,
+        ownerId = 0L,
         name = "",
         description = "",
         address = "",
