@@ -3,8 +3,8 @@ package org.example.kalbas_backend.dto.request
 import jakarta.validation.constraints.*
 import java.math.BigDecimal
 
-// DTO for creating an Item
-data class ItemCreateRequestDto(
+// DTO for creating a Product
+data class ProductCreateRequestDto(
     @field:NotNull(message = "Store ID cannot be null")
     val storeId: Long,
 
@@ -23,8 +23,8 @@ data class ItemCreateRequestDto(
     val cost: BigDecimal
 )
 
-// DTO for updating an Item
-data class ItemUpdateRequestDto(
+// DTO for updating a Product
+data class ProductUpdateRequestDto(
     @field:NotBlank(message = "Name cannot be blank")
     @field:Size(max = 255, message = "Name must not exceed 255 characters")
     val name: String,
