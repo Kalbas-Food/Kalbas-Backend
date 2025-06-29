@@ -33,6 +33,7 @@ class CategoryServiceImpl(
         }
         val category = Category(
             name = request.name,
+            imageUrl = request.imageUrl,
             parentCategory = parentCategory
         )
         val saved = categoryRepository.save(category)
@@ -67,6 +68,7 @@ class CategoryServiceImpl(
                 .orElseThrow { NoSuchElementException("Parent category not found with id: $parentId") }
         }
         category.name = request.name
+        category.imageUrl = request.imageUrl
         category.parentCategory = parentCategory
         category.isActive = request.isActive
         val updated = categoryRepository.save(category)
@@ -84,10 +86,12 @@ class CategoryServiceImpl(
     private fun Category.toDto(): CategoryResponseDto = CategoryResponseDto(
         id = this.id,
         name = this.name,
+        imageUrl = this.imageUrl,
         parentCategory = this.parentCategory?.let { parent ->
             CategoryParentDto(
                 id = parent.id,
-                name = parent.name
+                name = parent.name,
+                imageUrl = parent.imageUrl
             )
         },
         isActive = this.isActive,
