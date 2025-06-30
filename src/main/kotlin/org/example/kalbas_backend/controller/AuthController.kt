@@ -7,6 +7,7 @@ import org.example.kalbas_backend.dto.request.TokenRefreshRequestDto
 import org.example.kalbas_backend.dto.response.LoginResponseDto
 import org.example.kalbas_backend.dto.response.MessageResponseDto
 import org.example.kalbas_backend.dto.response.TokenRefreshResponseDto
+import org.example.kalbas_backend.dto.response.ApiResponse
 import org.example.kalbas_backend.enums.UserRoleEnum
 import org.example.kalbas_backend.exception.TokenRefreshException
 import org.example.kalbas_backend.model.User
@@ -32,7 +33,7 @@ class AuthController(
 ) {
 
     @PostMapping("/login")
-    fun authenticateUser(@Valid @RequestBody loginRequest: LoginRequestDto): ResponseEntity<LoginResponseDto> {
+    fun authenticateUser(@Valid @RequestBody loginRequest: LoginRequestDto): ResponseEntity<ApiResponse<LoginResponseDto>> {
         val authentication = authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(loginRequest.identifier, loginRequest.password)
         )
@@ -46,35 +47,51 @@ class AuthController(
         val refreshToken = refreshTokenService.createRefreshToken(userDetails.id!!)
 
         return ResponseEntity.ok(
-            LoginResponseDto(
-                token = jwt,
-                refreshToken = refreshToken.token,
-                id = userDetails.id,
-                username = userDetails.username,
-                email = userDetails.email,
-                roles = roles
+            ApiResponse(
+                success = true,
+                message = "Login successful",
+                data = LoginResponseDto(
+                    token = jwt,
+                    refreshToken = refreshToken.token,
+                    id = userDetails.id,
+                    username = userDetails.username,
+                    email = userDetails.email,
+                    roles = roles
+                )
             )
         )
     }
 
     @PostMapping("/signup")
-    fun registerUser(@Valid @RequestBody signupRequest: SignupRequestDto): ResponseEntity<MessageResponseDto> {
+    fun registerUser(@Valid @RequestBody signupRequest: SignupRequestDto): ResponseEntity<ApiResponse<MessageResponseDto>> {
         if (userRepository.existsByUsername(signupRequest.username)) {
             return ResponseEntity
                 .badRequest()
-                .body(MessageResponseDto("Error: Username is already taken!"))
+                .body(ApiResponse(
+                    success = false,
+                    message = "Error: Username is already taken!",
+                    data = MessageResponseDto("Error: Username is already taken!")
+                ))
         }
 
         if (userRepository.existsByEmail(signupRequest.email)) {
             return ResponseEntity
                 .badRequest()
-                .body(MessageResponseDto("Error: Email is already in use!"))
+                .body(ApiResponse(
+                    success = false,
+                    message = "Error: Email is already in use!",
+                    data = MessageResponseDto("Error: Email is already in use!")
+                ))
         }
 
         if (signupRequest.password != signupRequest.confirmPassword) {
             return ResponseEntity
                 .badRequest()
-                .body(MessageResponseDto("Error: Passwords do not match!"))
+                .body(ApiResponse(
+                    success = false,
+                    message = "Error: Passwords do not match!",
+                    data = MessageResponseDto("Error: Passwords do not match!")
+                ))
         }
 
         // Create a new user's account
@@ -87,11 +104,17 @@ class AuthController(
 
         userRepository.save(user)
 
-        return ResponseEntity.ok(MessageResponseDto("User registered successfully!"))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "User registered successfully!",
+                data = MessageResponseDto("User registered successfully!")
+            )
+        )
     }
 
     @PostMapping("/refreshtoken")
-    fun refreshToken(@Valid @RequestBody request: TokenRefreshRequestDto): ResponseEntity<TokenRefreshResponseDto> {
+    fun refreshToken(@Valid @RequestBody request: TokenRefreshRequestDto): ResponseEntity<ApiResponse<TokenRefreshResponseDto>> {
         val requestRefreshToken = request.refreshToken
 
         return refreshTokenService.findByToken(requestRefreshToken)
@@ -99,17 +122,29 @@ class AuthController(
             .map { refreshToken ->
                 val user = refreshToken.user ?: throw TokenRefreshException(requestRefreshToken, "User not found for refresh token!")
                 val token = jwtUtils.generateTokenFromUsername(user.username)
-                ResponseEntity.ok(TokenRefreshResponseDto(token, requestRefreshToken))
+                ResponseEntity.ok(
+                    ApiResponse(
+                        success = true,
+                        message = "Token refreshed successfully",
+                        data = TokenRefreshResponseDto(token, requestRefreshToken)
+                    )
+                )
             }
             .orElseThrow { TokenRefreshException(requestRefreshToken, "Refresh token is not in database!") }
     }
 
     @PostMapping("/signout")
-    fun logoutUser(): ResponseEntity<MessageResponseDto> {
+    fun logoutUser(): ResponseEntity<ApiResponse<MessageResponseDto>> {
         val principal = SecurityContextHolder.getContext().authentication.principal
         if (principal is User) {
             refreshTokenService.deleteByUserId(principal.id!!)
         }
-        return ResponseEntity.ok(MessageResponseDto("Log out successful!"))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Log out successful!",
+                data = MessageResponseDto("Log out successful!")
+            )
+        )
     }
 } 
